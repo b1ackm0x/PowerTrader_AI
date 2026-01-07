@@ -36,6 +36,11 @@ I am not selling anything. This trading bot is not a product. This system is for
 - [👉 C Version Guide](c_version/README.md)
 - [👉 Python Version Guide](python_version/README.md)
 
+**Note about repository history:**
+
+- The repository history was rewritten to remove a committed Python virtual environment (`python_version/venv`). If you previously cloned this repository, please re-clone or run:
+- ``git fetch origin && git reset --hard origin/main``
+
 ## 🔐 API Credentials Setup (Both Versions)
 
 Both versions use independent credentials files: **`rh00d.sct`** in each directory
