@@ -1,0 +1,17 @@
+# Ignore virtual environments
+python_version/venv/
+
+# Ignore editor/project settings
+.vscode/
+
+# Ignore secret credential files
+*_key.txt
+*_secret.txt
+robinhood_creds.json
+
+# Ignore pycache
+**/__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
