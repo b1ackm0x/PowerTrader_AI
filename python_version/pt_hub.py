@@ -13,22 +13,42 @@ import bisect
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-# Auto-install required packages if missing
+# Auto-install required packages if missing (robust/fallback)
 required_packages = {
-    "requests": "requests",
-    "psutil": "psutil",
-    "matplotlib": "matplotlib",
-    "colorama": "colorama",
-    "cryptography": "cryptography",
-    "nacl": "PyNaCl",
-    "kucoin": "kucoin-python"
+    "requests": ["requests"],
+    "psutil": ["psutil"],
+    "matplotlib": ["matplotlib"],
+    "colorama": ["colorama"],
+    "cryptography": ["cryptography"],
+    "nacl": ["PyNaCl"],
+    # `kucoin` module is provided by different package names on PyPI
+    "kucoin": ["kucoin-python", "kucoin", "python-kucoin"]
 }
-for module, package in required_packages.items():
+for module, candidates in required_packages.items():
     try:
         __import__(module)
     except ImportError:
-        print(f"Installing missing dependency: {package}")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--user", package])
+        last_err = None
+        for package in candidates:
+            try:
+                print(f"Attempting to install {package} to satisfy module '{module}'")
+                subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", package])
+                # try import again
+                __import__(module)
+                last_err = None
+                break
+            except Exception as e:
+                last_err = e
+                # continue trying other candidate package names
+                continue
+        if last_err is not None:
+            msg = (
+                f"Could not import or install a package that provides module '{module}'.\n"
+                f"Tried: {candidates}. Last error: {last_err}\n"
+                "If you are on a system-managed Python environment, please create and activate a virtualenv,"
+                " then run: pip install -r python_version/requirements.txt"
+            )
+            print(msg)
 
 import tkinter as tk
 import tkinter.font as tkfont
